@@ -25,7 +25,7 @@ Einfach `index.html` im Browser öffnen – oder über GitHub Pages direkt onlin
 - **8 wählbare Kameras** + 3 Kino-exklusive Einstellungen: Verfolger, Seite, Gleis, Drohne, Bug, Fahrwerk, Führerstand, Abteil, Kran, Vogel, Überholung
 - **Führerstand & Abteil**: Innenansicht mit Fahrgästen, per Ziehen umsehen
 - **Tempo** in drei Stufen, **Schnee** an/aus, **Pixelgröße** in vier Stufen
-- **Ton**: synthetisiertes Rattern, Rumpeln und Brummen (Web Audio) – innen gedämpfter als außen; funktioniert auf dem iPhone auch bei Stummschalter
+- **Ton** startet automatisch (wo der Browser es blockiert, beim ersten Antippen): synthetisiertes Rattern, Rumpeln und Brummen (Web Audio) – innen gedämpfter als außen; funktioniert auf dem iPhone auch bei Stummschalter
 - Antippen blendet das Menü ein/aus
 
 Technik: three.js (r128), eigener Post-Processing-Shader (7-Farben-Palette mit Bayer-Dithering), prozedurale Welt in Abschnitten, die laufend nachgebaut und wieder entfernt werden.

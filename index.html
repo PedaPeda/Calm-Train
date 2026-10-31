@@ -662,7 +662,7 @@ bSpeed.addEventListener('click',()=>{spI=(spI+1)%3;speedT=SPEEDS[spI];bSpeed.tex
 const bSnow=document.getElementById('bSnow');
 bSnow.addEventListener('click',()=>{snowOn=!snowOn;bSnow.classList.toggle('on',snowOn);});
 const bSound=document.getElementById('bSound');
-bSound.addEventListener('click',()=>{try{soundOn=!soundOn;
+function setSound(on,auto){try{soundOn=on;
     if(soundOn){
       try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
       unlockIOS();
@@ -671,11 +671,17 @@ bSound.addEventListener('click',()=>{try{soundOn=!soundOn;
       // instant feedback: a few knocks right away
       const t=AC.currentTime+.05;A.master.gain.cancelScheduledValues(t);A.master.gain.setValueAtTime(.9,t);
       for(const[d,g]of AXLES)clack(t+d/24,.5*g);
-      const chk=()=>{if(AC.state!=='running')showHint('TON BLOCKIERT – STUMMSCHALTER / LAUTSTÄRKE PRÜFEN',4500);else showHint('TON AN',1200);};
+      const chk=()=>{if(AC.state!=='running'){if(!auto)showHint('TON BLOCKIERT – STUMMSCHALTER / LAUTSTÄRKE PRÜFEN',4500);}else if(!auto)showHint('TON AN',1200);};
       if(pr&&pr.then)pr.then(()=>setTimeout(chk,300),()=>chk());else setTimeout(chk,300);
     }else{AC&&AC.suspend();if(silentEl)silentEl.pause();}
-  }catch(e){soundOn=false;showHint('TON NICHT VERFÜGBAR',3000);}
-  bSound.classList.toggle('on',soundOn);bSound.textContent=soundOn?'♪ TON AN':'♪ TON AUS';});
+  }catch(e){soundOn=false;if(!auto)showHint('TON NICHT VERFÜGBAR',3000);}
+  bSound.classList.toggle('on',soundOn);bSound.textContent=soundOn?'♪ TON AN':'♪ TON AUS';}
+bSound.addEventListener('click',()=>setSound(!soundOn,false));
+/* autostart with sound: browsers only allow audio after a user gesture,
+   so if the context is still blocked, start it on the very first tap / key */
+function kickAudio(){if(!soundOn)return;if(!AC){setSound(true,true);return;}
+  if(AC.state!=='running'){AC.resume();unlockIOS();lastJoint=Math.floor(D/JOINT);}}
+['pointerdown','touchend','keydown','click'].forEach(ev=>document.addEventListener(ev,kickAudio,{capture:true,passive:true}));
 const bPix=document.getElementById('bPix');
 bPix.addEventListener('click',()=>{pixI=(pixI+1)%PIX.length;resize();bPix.textContent='PIXEL '+['▮▯▯▯','▮▮▯▯','▮▮▮▯','▮▮▮▮'][pixI];});
 let pd=null;
@@ -707,7 +713,9 @@ streamWorld(true);
 placeTrain();
 resetSnow('world');
 setCine(true);
+setSound(true,true);
 autoHide(4500);
+setTimeout(()=>{if(AC&&AC.state!=='running'&&soundOn)showHint('ANTIPPEN FÜR TON',3500);},700);
 setTimeout(()=>showHint('TIPPEN: MENÜ EINBLENDEN',3200),4800);
 let last=performance.now(),T=0;
 function frame(now){
